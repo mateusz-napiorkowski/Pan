@@ -34,6 +34,7 @@ cards = pygame.sprite.Group()
 cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
 for i, card_name in enumerate(player_cards):
     cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
+chosen_cards = [False] * cards_number
 pygame.display.update()
 while True:
     events = pygame.event.get()
@@ -48,7 +49,8 @@ while True:
                 if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
                     chosen_card_index = card_index
             if chosen_card_index is not None:
-                cards.sprites()[chosen_card_index].update(500, 200)
+                cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 525)
+                chosen_cards[chosen_card_index] = True
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

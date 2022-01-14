@@ -3,8 +3,8 @@ import time
 
 pygame.init()
 
-display_width = 800
-display_height = 600
+display_width = 700
+display_height = 700
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Pan')
@@ -21,6 +21,6 @@ y = (display_height * 0.0)
 gameDisplay.fill(white)
 gameDisplay.blit(img, (x, y))
 pygame.display.update()
-time.sleep(2)
+time.sleep(60)
 pygame.quit()
 quit()

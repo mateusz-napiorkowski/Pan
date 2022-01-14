@@ -3,14 +3,17 @@ import time
 
 
 class Card(pygame.sprite.Sprite):
-    def __init__(self, imagepath, x_pos, y_pos):
+    def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([100, 145])
-        self.image = pygame.image.load(imagepath)
+        self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
         self.rect.center = [x_pos, y_pos]
+
     def update(self, x_pos, y_pos):
         self.rect.center = [x_pos, y_pos]
+
+
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -28,22 +31,22 @@ card = Card('cards/9_of_diamonds.png', 100, 100)
 
 cards = pygame.sprite.Group()
 cards.add(card)
+print(cards)
+print(dir(cards))
 pygame.display.update()
-sprites = pygame.sprite.Group()
-print(sprites)
 while True:
     events = pygame.event.get()
     for event in events:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
-                print(sprites)
                 pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            cards.update(500, 500)
-            #clicked_sprites = [s for s in sprites if s.rect.collidepoint(pos)]
+            mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
+            for card in cards:
+                if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
+                    cards.update(500, 500)
     pygame.display.flip()
-    gameDisplay.blit(background, (0,0))
+    gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)
     clock.tick(60)
 quit()

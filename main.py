@@ -28,11 +28,11 @@ white = (255, 255, 255)
 
 
 card = Card('cards/9_of_diamonds.png', 100, 100)
+card2 = Card('cards/9_of_clubs.png', 120, 120)
 
 cards = pygame.sprite.Group()
 cards.add(card)
-print(cards)
-print(dir(cards))
+cards.add(card2)
 pygame.display.update()
 while True:
     events = pygame.event.get()
@@ -44,7 +44,7 @@ while True:
             mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
             for card in cards:
                 if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
-                    cards.update(500, 500)
+                    card.update(500, 500)
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

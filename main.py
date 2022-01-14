@@ -30,7 +30,8 @@ white = (255, 255, 255)
 card_images = os.listdir('cards')
 player_cards = random.sample(card_images, 12)
 cards = pygame.sprite.Group()
-cards_positions = [(x, 500) for x in range(200, 700, 30)][:12]
+cards_number = 12
+cards_positions = [(x, 550) for x in range((700-(30*(cards_number-1)+100))//2+50, 700, 30)][:12]
 for i, card_name in enumerate(player_cards):
     cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
 pygame.display.update()

@@ -12,11 +12,11 @@ pygame.display.set_caption('Pan')
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-img = pygame.image.load('9.png')
+img = pygame.image.load('cards/9_of_diamonds.png')
 
 
-x = (display_width * 0.5)
-y = (display_height * 0.5)
+x = (display_width * 0.0)
+y = (display_height * 0.0)
 
 gameDisplay.fill(white)
 gameDisplay.blit(img, (x, y))

@@ -13,7 +13,7 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 img = pygame.image.load('cards/9_of_diamonds.png')
-
+img = pygame.transform.scale(img, (100, 100))
 
 x = (display_width * 0.0)
 y = (display_height * 0.0)
@@ -21,6 +21,10 @@ y = (display_height * 0.0)
 gameDisplay.fill(white)
 gameDisplay.blit(img, (x, y))
 pygame.display.update()
-time.sleep(60)
-pygame.quit()
+while True:
+    events = pygame.event.get()
+    for event in events:
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                pygame.quit()
 quit()

@@ -28,15 +28,11 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 card_images = os.listdir('cards')
-print(card_images)
 player_cards = random.sample(card_images, 12)
-print(player_cards)
 cards = pygame.sprite.Group()
 cards_positions = [(x, 500) for x in range(200, 700, 30)][:12]
-print(cards_positions)
 for i, card_name in enumerate(player_cards):
     cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
-print("spr:", cards.sprites())
 pygame.display.update()
 while True:
     events = pygame.event.get()
@@ -46,11 +42,12 @@ while True:
                 pygame.quit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
+            chosen_card_index = None
             for card_index, card in enumerate(cards):
                 if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
                     chosen_card_index = card_index
-            cards.sprites()[chosen_card_index].update(500, 200)
-            print(len(cards))
+            if chosen_card_index is not None:
+                cards.sprites()[chosen_card_index].update(500, 200)
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

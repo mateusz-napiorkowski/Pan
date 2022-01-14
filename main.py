@@ -49,8 +49,13 @@ while True:
                 if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
                     chosen_card_index = card_index
             if chosen_card_index is not None:
-                cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 525)
-                chosen_cards[chosen_card_index] = True
+                if not chosen_cards[chosen_card_index]:
+                    cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 525)
+                    chosen_cards[chosen_card_index] = True
+                else:
+                    cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
+                    chosen_cards[chosen_card_index] = False
+
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

@@ -18,7 +18,7 @@ class Card(pygame.sprite.Sprite):
 pygame.init()
 clock = pygame.time.Clock()
 
-display_width = 700
+display_width = 1000
 display_height = 700
 
 gameDisplay = pygame.display.set_mode((display_width, display_height))
@@ -28,10 +28,10 @@ black = (0, 0, 0)
 white = (255, 255, 255)
 
 card_images = os.listdir('cards')
-player_cards = random.sample(card_images, 12)
-cards = pygame.sprite.Group()
 cards_number = 12
-cards_positions = [(x, 550) for x in range((700-(30*(cards_number-1)+100))//2+50, 700, 30)][:12]
+player_cards = random.sample(card_images, cards_number)
+cards = pygame.sprite.Group()
+cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
 for i, card_name in enumerate(player_cards):
     cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
 pygame.display.update()

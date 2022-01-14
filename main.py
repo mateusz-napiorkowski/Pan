@@ -1,5 +1,6 @@
 import pygame
-import time
+import os
+import random
 
 
 class Card(pygame.sprite.Sprite):
@@ -26,13 +27,16 @@ background = pygame.image.load('background.jpg')
 black = (0, 0, 0)
 white = (255, 255, 255)
 
-
-card = Card('cards/9_of_diamonds.png', 100, 100)
-card2 = Card('cards/9_of_clubs.png', 120, 120)
-
+card_images = os.listdir('cards')
+print(card_images)
+player_cards = random.sample(card_images, 12)
+print(player_cards)
 cards = pygame.sprite.Group()
-cards.add(card)
-cards.add(card2)
+cards_positions = [(x, 500) for x in range(0, 700, 50)][:12]
+print(cards_positions)
+for i, card_name in enumerate(player_cards):
+    cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
+
 pygame.display.update()
 while True:
     events = pygame.event.get()
@@ -44,7 +48,8 @@ while True:
             mouse_x_pos, mouse_y_pos = pygame.mouse.get_pos()
             for card in cards:
                 if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
-                    card.update(500, 500)
+                    card.update(500, 200)
+                    break
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

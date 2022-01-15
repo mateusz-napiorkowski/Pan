@@ -2,7 +2,6 @@ import pygame
 import os
 import random
 
-
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)

@@ -1,6 +1,7 @@
 import pygame
 import os
 import random
+import socket
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
@@ -23,6 +24,15 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [x_pos, y_pos]
 
+
+host = '127.0.0.1'
+port = 1100
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((host, port))
+    msg = 'hello world'
+    s.send(bytes(msg, 'utf-8'))
+    s.close()
 
 pygame.init()
 clock = pygame.time.Clock()

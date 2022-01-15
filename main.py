@@ -14,6 +14,14 @@ class Card(pygame.sprite.Sprite):
     def update(self, x_pos, y_pos):
         self.rect.center = [x_pos, y_pos]
 
+class Button(pygame.sprite.Sprite):
+    def __init__(self, image_path, x_pos, y_pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([140, 40])
+        # self.image.fill((255,255,255))
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.center = [x_pos, y_pos]
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -30,6 +38,9 @@ white = (255, 255, 255)
 card_images = os.listdir('cards')
 cards_number = 12
 player_cards = random.sample(card_images, cards_number)
+buttons = pygame.sprite.Group()
+buttons.add(Button('play_button.png', 400, 660))
+buttons.add(Button('draw_button.png', 600, 660))
 cards = pygame.sprite.Group()
 cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
 for i, card_name in enumerate(player_cards):
@@ -59,5 +70,6 @@ while True:
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)
+    buttons.draw(gameDisplay)
     clock.tick(60)
 quit()

@@ -25,16 +25,20 @@ class Button(pygame.sprite.Sprite):
         self.rect.center = [x_pos, y_pos]
 
 
-# host = '127.0.0.1'
-# port = 1100
-#
-# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#     s.connect((host, port))
-#     msg = 'hello world'
-#     #s.send(bytes(msg, 'utf-8'))
-#     data = s.recv(11)
-#     print(data)
-#     s.close()
+host = '127.0.0.1'
+port = 1100
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((host, port))
+    msg = 'hello world'
+    #s.send(bytes(msg, 'utf-8'))
+    data = s.recv(12)
+    player_cards = [byte for byte in data]
+    print(player_cards)
+    # for b in data:
+    #     print(b, type(b), int(b))
+    # print(data)
+    s.close()
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -53,11 +57,11 @@ buttons.add(Button('draw_button.png', 600, 660))
 card_images = sorted(os.listdir('cards'), key=lambda x: int(re.match('(\d+).*', x).groups()[0]))
 print(card_images)
 cards_number = 12
-player_cards = random.sample(card_images, cards_number)
+# player_cards = random.sample(card_images, cards_number)
 cards = pygame.sprite.Group()
 cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
 for i, card_name in enumerate(player_cards):
-    cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
+    cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
 chosen_cards = [False] * cards_number
 
 while True:

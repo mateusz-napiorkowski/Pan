@@ -6,8 +6,95 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include<pthread.h>
+
+char client_message[2000];
+char buffer[1024];
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+struct playerSockets {
+            int player1Socket;
+            int player2Socket;
+};
+
+void * socketThread(void *arg)
+{
+  struct playerSockets *struct_ptr = (struct playerSockets*) arg;
+  char cards[24];
+  for(int i=0;i<24;i++) {
+      cards[i] = i;
+  }
+  time_t t;
+  srand((unsigned) time(&t));
+  int player1Cards[12];
+  for(int i=0;i<12;i++) {
+    player1Cards[i] = 24;
+  }
+  int cardsChosen = 0, chosenCard, unique = 1;
+  while(cardsChosen != 12) {
+    chosenCard = rand() % 24;
+    for(int j=0;j<12;j++) {
+        if(player1Cards[j] == chosenCard) {
+            unique = 0;
+            break;
+        }
+    }
+    if(unique) {
+        player1Cards[cardsChosen] = chosenCard;
+        cardsChosen++;
+    } else {
+        unique = 1;
+    }
+  }
+
+  int player2Cards[12];
+  int player2CardsCounter = 0;
+  unique = 1;
+  for (int i=0;i<24;i++) {
+    for(int j=0; j<12; j++) {
+        if(player1Cards[j] == i) {
+            unique = 0;
+        }
+    }
+    if(unique) {
+        player2Cards[player2CardsCounter] = i;
+        player2CardsCounter++;
+    } else {
+        unique = 1;
+    }
+  }
+
+  char player1CardsToSend[12], player2CardsToSend[12];
+  for(int i=0; i<12; i++) {
+    player1CardsToSend[i] = player1Cards[i];
+    player2CardsToSend[i] = player2Cards[i];
+  }
+  send(struct_ptr->player1Socket, player1CardsToSend, 12, 0);
+  send(struct_ptr->player2Socket, player2CardsToSend, 12, 0);
+  //printf("my struct: %d\n", struct_ptr->newSocket);
+  //printf("my struct: %d\n", struct_ptr->newSocket2);
+//  int n;
+//  for(;;){
+//    n=recv(struct_ptr->player1Socket , client_message , 2000 , 0);
+//        if(n<1){
+//            break;
+//        }
+//
+//    char *message = malloc(sizeof(client_message));
+//    strcpy(message,client_message);
+//    sleep(1);
+//    send(struct_ptr->player2Socket,message,11,0);
+//    memset(&client_message, 0, sizeof (client_message));
+//
+//    }
+    printf("Exit socketThread \n");
+
+    pthread_exit(NULL);
+}
 
 int main() {
+
     struct sockaddr_in address;
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd == -1) {
@@ -15,6 +102,14 @@ int main() {
         exit(EXIT_FAILURE);
     }
     memset(&address, 0, sizeof address);
+
+    int opt=1;
+    if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                                                  &opt, sizeof(opt)))
+    {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
     address.sin_family = AF_INET;
     address.sin_port = htons(1100);
@@ -35,31 +130,21 @@ int main() {
     }
     struct sockaddr_storage serverStorage;
     socklen_t addr_size;
+    pthread_t thread_id;
+    struct playerSockets playerSockets;
     for(;;) {
         addr_size = sizeof serverStorage;
-        int new_socket = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
-
-        if (new_socket == -1) {
-            perror("accept failed");
-            close(sockfd);
-            exit(EXIT_FAILURE);
+//        int newSocket = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
+//        int newSocket2 = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
+        struct playerSockets;
+        playerSockets.player1Socket = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
+        playerSockets.player2Socket = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
+        //printf("new socket: %d\n", newSocket);
+        if(pthread_create(&thread_id, NULL, socketThread, &playerSockets) != 0) {
+            printf("Failed to create thread\n");
         }
 
-
-        char buffer[256];
-        bzero(buffer, 256);
-        int n = read(new_socket, buffer, sizeof buffer);
-
-        printf("message: %s\n", buffer);
-        printf("n: %i\n", n);
-
-        if (shutdown(new_socket, SHUT_RDWR) == -1) {
-            perror("shutdown failed");
-            close(new_socket);
-            close(sockfd);
-            exit(EXIT_FAILURE);
-        }
-        close(new_socket);
+        pthread_detach(thread_id);
     }
     close(sockfd);
     return EXIT_SUCCESS;

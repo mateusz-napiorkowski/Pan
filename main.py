@@ -3,6 +3,7 @@ import os
 import random
 import socket
 
+
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -19,7 +20,6 @@ class Button(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface([140, 40])
-        # self.image.fill((255,255,255))
         self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
         self.rect.center = [x_pos, y_pos]

@@ -20,6 +20,8 @@ int main() {
     address.sin_port = htons(1100);
     address.sin_addr.s_addr = htonl(INADDR_ANY);
 
+    memset(address.sin_zero, '\0', sizeof address.sin_zero);
+
     if (bind(sockfd, (struct sockaddr *)&address, sizeof address) == -1) {
         perror("bind failed");
         close(sockfd);
@@ -31,9 +33,11 @@ int main() {
         close(sockfd);
         exit(EXIT_FAILURE);
     }
-
+    struct sockaddr_storage serverStorage;
+    socklen_t addr_size;
     for(;;) {
-        int new_socket = accept(sockfd, NULL, NULL);
+        addr_size = sizeof serverStorage;
+        int new_socket = accept(sockfd, (struct sockaddr *) &serverStorage, &addr_size);
 
         if (new_socket == -1) {
             perror("accept failed");

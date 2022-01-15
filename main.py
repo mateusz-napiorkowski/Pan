@@ -2,7 +2,7 @@ import pygame
 import os
 import random
 import socket
-
+import re
 
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
@@ -25,14 +25,16 @@ class Button(pygame.sprite.Sprite):
         self.rect.center = [x_pos, y_pos]
 
 
-host = '127.0.0.1'
-port = 1100
-
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((host, port))
-    msg = 'hello world'
-    s.send(bytes(msg, 'utf-8'))
-    s.close()
+# host = '127.0.0.1'
+# port = 1100
+#
+# with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+#     s.connect((host, port))
+#     msg = 'hello world'
+#     #s.send(bytes(msg, 'utf-8'))
+#     data = s.recv(11)
+#     print(data)
+#     s.close()
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -48,7 +50,8 @@ buttons = pygame.sprite.Group()
 buttons.add(Button('play_button.png', 400, 660))
 buttons.add(Button('draw_button.png', 600, 660))
 
-card_images = os.listdir('cards')
+card_images = sorted(os.listdir('cards'), key=lambda x: int(re.match('(\d+).*', x).groups()[0]))
+print(card_images)
 cards_number = 12
 player_cards = random.sample(card_images, cards_number)
 cards = pygame.sprite.Group()

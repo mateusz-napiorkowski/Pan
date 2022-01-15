@@ -14,6 +14,7 @@ class Card(pygame.sprite.Sprite):
     def update(self, x_pos, y_pos):
         self.rect.center = [x_pos, y_pos]
 
+
 class Button(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -22,6 +23,7 @@ class Button(pygame.sprite.Sprite):
         self.image = pygame.image.load(image_path)
         self.rect = self.image.get_rect()
         self.rect.center = [x_pos, y_pos]
+
 
 pygame.init()
 clock = pygame.time.Clock()
@@ -32,21 +34,20 @@ display_height = 700
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Pan')
 background = pygame.image.load('background.jpg')
-black = (0, 0, 0)
-white = (255, 255, 255)
+
+buttons = pygame.sprite.Group()
+buttons.add(Button('play_button.png', 400, 660))
+buttons.add(Button('draw_button.png', 600, 660))
 
 card_images = os.listdir('cards')
 cards_number = 12
 player_cards = random.sample(card_images, cards_number)
-buttons = pygame.sprite.Group()
-buttons.add(Button('play_button.png', 400, 660))
-buttons.add(Button('draw_button.png', 600, 660))
 cards = pygame.sprite.Group()
 cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
 for i, card_name in enumerate(player_cards):
     cards.add(Card(f'cards/{card_name}', cards_positions[i][0], cards_positions[i][1]))
 chosen_cards = [False] * cards_number
-pygame.display.update()
+
 while True:
     events = pygame.event.get()
     for event in events:
@@ -66,7 +67,6 @@ while True:
                 else:
                     cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
                     chosen_cards[chosen_card_index] = False
-
     pygame.display.flip()
     gameDisplay.blit(background, (0, 0))
     cards.draw(gameDisplay)

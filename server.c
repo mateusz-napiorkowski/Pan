@@ -9,6 +9,52 @@
 #include <fcntl.h>
 #include<pthread.h>
 
+int MAXSIZE = 24;
+int stack[24];
+int top = -1;
+
+int isempty() {
+
+   if(top == -1)
+      return 1;
+   else
+      return 0;
+}
+
+int isfull() {
+
+   if(top == MAXSIZE)
+      return 1;
+   else
+      return 0;
+}
+
+int peek() {
+   return stack[top];
+}
+
+int pop() {
+   int data;
+
+   if(!isempty()) {
+      data = stack[top];
+      top = top - 1;
+      return data;
+   } else {
+      printf("Could not retrieve data, Stack is empty.\n");
+   }
+}
+
+int push(int data) {
+
+   if(!isfull()) {
+      top = top + 1;
+      stack[top] = data;
+   } else {
+      printf("Could not insert data, Stack is full.\n");
+   }
+}
+
 char client_message[2000];
 char buffer[1024];
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -25,11 +71,12 @@ void * socketThread(void *arg)
   for(int i=0;i<24;i++) {
       cards[i] = i;
   }
+  /*Deal the cards for both players at the start of the game*/
   time_t t;
   srand((unsigned) time(&t));
   int player1Cards[12];
   for(int i=0;i<12;i++) {
-    player1Cards[i] = 24;
+    player1Cards[i] = -1;
   }
   int cardsChosen = 0, chosenCard, unique = 1;
   while(cardsChosen != 12) {
@@ -47,7 +94,6 @@ void * socketThread(void *arg)
         unique = 1;
     }
   }
-
   int player2Cards[12];
   int player2CardsCounter = 0;
   unique = 1;
@@ -64,7 +110,6 @@ void * socketThread(void *arg)
         unique = 1;
     }
   }
-
   char player1CardsToSend[12], player2CardsToSend[12];
   for(int i=0; i<12; i++) {
     player1CardsToSend[i] = player1Cards[i];
@@ -72,6 +117,9 @@ void * socketThread(void *arg)
   }
   send(struct_ptr->player1Socket, player1CardsToSend, 12, 0);
   send(struct_ptr->player2Socket, player2CardsToSend, 12, 0);
+
+
+
   //printf("my struct: %d\n", struct_ptr->newSocket);
   //printf("my struct: %d\n", struct_ptr->newSocket2);
 //  int n;

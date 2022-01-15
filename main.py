@@ -4,6 +4,7 @@ import random
 import socket
 import re
 
+
 class Card(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)

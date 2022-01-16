@@ -82,6 +82,17 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     card_stack = []
     first_move = True
     while True:
+        pygame.display.flip()
+        gameDisplay.blit(background, (0, 0))
+        ready = select.select([s], [], [], 0.01)
+        if ready[0]:
+            whose_turn = int(s.recv(1))
+            print(f'Me: {which_player}, Whose turn: {whose_turn}')
+        if which_player == whose_turn:
+            buttons.draw(gameDisplay)
+        cards.draw(gameDisplay)
+        labels.draw(gameDisplay)
+        clock.tick(60)
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -101,7 +112,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     else:
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
                         chosen_cards[chosen_card_index] = '0'
-
                 for i, button in enumerate(buttons):
                     if button.rect.collidepoint(mouse_x_pos, mouse_y_pos):
                         if i == 0:  # play button
@@ -127,14 +137,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                               :cards_number]
                             for i, card_name in enumerate(player_cards):
                                 cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
-        pygame.display.flip()
-        gameDisplay.blit(background, (0, 0))
-        ready = select.select([s], [], [], 0.01)
-        if ready[0]:
-            whose_turn = int(s.recv(1))
-            print(f'Me: {which_player}, Whose turn: {whose_turn}')
-        if which_player == whose_turn:
-            buttons.draw(gameDisplay)
-        cards.draw(gameDisplay)
-        labels.draw(gameDisplay)
-        clock.tick(60)

@@ -60,6 +60,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
     card_images = sorted(os.listdir('cards'), key=lambda x: int(re.match('(\d+).*', x).groups()[0]))
+    card_indices = [i for i in range(24)]
     cards_number = 12
     data = s.recv(13)
     player_cards = [byte for byte in data]
@@ -76,8 +77,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
     for i, card_name in enumerate(player_cards):
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
-    chosen_cards = [False] * cards_number
-
+    chosen_cards = ['0'] * cards_number
+    chosen_cards_to_send = ['0'] * 24
     while True:
         events = pygame.event.get()
         for event in events:
@@ -92,13 +93,20 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     if card.rect.collidepoint(mouse_x_pos, mouse_y_pos):
                         chosen_card_index = card_index
                 if chosen_card_index is not None:
-                    if not chosen_cards[chosen_card_index]:
+                    if chosen_cards[chosen_card_index] == '0':
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 525)
-                        chosen_cards[chosen_card_index] = True
+                        chosen_cards[chosen_card_index] = '1'
                     else:
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
-                        chosen_cards[chosen_card_index] = False
-
+                        chosen_cards[chosen_card_index] = '0'
+                for i, button in enumerate(buttons):
+                    if button.rect.collidepoint(mouse_x_pos, mouse_y_pos):
+                        if i == 0:
+                            for j, player_card in enumerate(player_cards):
+                                if chosen_cards[j] == '1':
+                                    chosen_cards_to_send[player_card] = '1'
+                            s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
+                            chosen_cards_to_send = ['0'] * 24
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)

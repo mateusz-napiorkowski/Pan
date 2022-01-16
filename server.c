@@ -143,6 +143,18 @@ void * socketThread(void *arg)
   }
   send(struct_ptr->player1Socket, &turn, 1, 0);
   send(struct_ptr->player2Socket, &turn, 1, 0);
+  int n;
+  char chosenCardsVector[24];
+  if(whoseTurn == 1) {
+    n=recv(struct_ptr->player1Socket , chosenCardsVector , 24 , 0);
+  } else {
+    n=recv(struct_ptr->player2Socket , chosenCardsVector , 24 , 0);
+  }
+  for (int i=0;i<24; i++) {
+  printf("%d %d\n", i, chosenCardsVector[i]);
+  }
+
+
 
 
   //printf("my struct: %d\n", struct_ptr->newSocket);

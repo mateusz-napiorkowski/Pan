@@ -194,7 +194,7 @@ void * socketThread(void *arg)
         }
       }
   }
-
+    /*Next moves*/
 //  while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "00000000000000000000000") {
     if(whoseTurn == 1) {
         whoseTurn = 2;
@@ -228,15 +228,18 @@ void * socketThread(void *arg)
     if(validMove == '1') {
         if((peek() == 0 && strcmp(chosenCardsVector, "011100000000000000000000") == 0) ||
             ((chosenCardsCount == 1) && (peek() / 4 + 1 == chosenCardsIndices[0] / 4)) ||
+            ((chosenCardsCount == 1) && (peek() / 4 == chosenCardsIndices[0] / 4)) ||
             ((chosenCardsCount == 4) && (chosenCardsIndices[0] + 3 == chosenCardsIndices[3]) && (chosenCardsIndices[0] % 4 == 0) &&
                 (peek() / 4 + 1 == chosenCardsIndices[0] / 4)
             )
         ) {
             validMove == '1';
+            printf("OK\n");
             for(int i=0; i<chosenCardsCount; i++) {
                 push(chosenCardsIndices[i]);
             }
         } else {
+            printf("NOT OK\n");
             validMove == '0';
         }
     }
@@ -245,7 +248,6 @@ void * socketThread(void *arg)
     } else {
         send(struct_ptr->player2Socket, &validMove, 1, 0);
     }
-    printf("peek(): %d\n", peek());
 
 //  }
   printf("Exit socketThread \n");

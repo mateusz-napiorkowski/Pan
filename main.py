@@ -107,6 +107,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                     chosen_cards_to_send[player_card] = '1'
                             s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
                             chosen_cards_to_send = ['0'] * 24
+                            print('waiting for data')
+                            data = s.recv(1)
+                            ok = [byte for byte in data]
+                            print(ok)
+                            if chr(ok[0]) == '1':
+                                print('Valid move')
+                            else:
+                                print('Invalid move')
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)

@@ -153,6 +153,26 @@ void * socketThread(void *arg)
   for (int i=0;i<24; i++) {
   printf("%d %d\n", i, chosenCardsVector[i]);
   }
+  char validMove = '0';
+  if(strcmp(chosenCardsVector, "100000000000000000000000") == 0 || strcmp(chosenCardsVector, "111100000000000000000000") == 0) {
+    printf("OK\n");
+    validMove = '1';
+  } else {
+    printf("NOT OK\n");
+  }
+  if(validMove == '1') {
+    if(whoseTurn == 1) {
+        send(struct_ptr->player1Socket, &validMove, 1, 0);
+    } else {
+        send(struct_ptr->player2Socket, &validMove, 1, 0);
+    }
+  } else {
+    if(whoseTurn == 1) {
+        send(struct_ptr->player1Socket, &validMove, 1, 0);
+    } else {
+        send(struct_ptr->player2Socket, &validMove, 1, 0);
+    }
+  }
 
 
 

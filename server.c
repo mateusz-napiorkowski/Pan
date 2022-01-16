@@ -135,11 +135,14 @@ void * socketThread(void *arg)
     }
   }
   printf("Player %d:\n", whoseTurn);
+  char turn;
   if(whoseTurn == 1) {
-
+    turn = '1';
   } else {
-
+    turn = '2';
   }
+  send(struct_ptr->player1Socket, &turn, 1, 0);
+  send(struct_ptr->player2Socket, &turn, 1, 0);
 
 
   //printf("my struct: %d\n", struct_ptr->newSocket);

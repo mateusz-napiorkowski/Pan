@@ -3,6 +3,7 @@ import os
 import random
 import socket
 import re
+import select
 
 
 class Card(pygame.sprite.Sprite):
@@ -39,6 +40,7 @@ port = 1100
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((host, port))
+    #s.setblocking(0)
     #s.send(bytes(msg, 'utf-8'))
 
 
@@ -62,7 +64,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     data = s.recv(13)
     player_cards = [byte for byte in data]
     which_player = player_cards.pop()
-
     labels = pygame.sprite.Group()
     if which_player == 1:
         labels.add(Player_label('player1.png', 200, 660))
@@ -97,9 +98,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     else:
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
                         chosen_cards[chosen_card_index] = False
+
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
+        ready = select.select([s], [], [], 0.01)
+        if ready[0]:
+            whose_turn = int(s.recv(1))
+        if which_player == whose_turn:
+            buttons.draw(gameDisplay)
         cards.draw(gameDisplay)
-        buttons.draw(gameDisplay)
         labels.draw(gameDisplay)
         clock.tick(60)

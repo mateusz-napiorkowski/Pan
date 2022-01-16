@@ -195,7 +195,7 @@ void * socketThread(void *arg)
       }
   }
     /*Next moves*/
-//  while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "00000000000000000000000") {
+while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "00000000000000000000000") {
     if(whoseTurn == 1) {
         whoseTurn = 2;
         turn = '2';
@@ -241,6 +241,13 @@ void * socketThread(void *arg)
                 printf("OK\n");
                 for(int i=0; i<chosenCardsCount; i++) {
                     push(chosenCardsIndices[i]);
+                    if(whoseTurn == 1) {
+                        player1CardsVector[chosenCardsIndices[i]] = '0';
+                        printf("player1: %s\n", player1CardsVector);
+                    } else {
+                        player2CardsVector[chosenCardsIndices[i]] = '0';
+                        printf("player1: %s\n", player2CardsVector);
+                    }
                 }
             } else {
                 printf("NOT OK\n");
@@ -253,7 +260,7 @@ void * socketThread(void *arg)
             send(struct_ptr->player2Socket, &validMove, 1, 0);
         }
     }
-//  }
+}
   printf("Exit socketThread \n");
 
   pthread_exit(NULL);

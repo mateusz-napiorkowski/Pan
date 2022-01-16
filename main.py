@@ -80,7 +80,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 24
     card_stack = []
-    first_move = True
     while True:
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
@@ -130,6 +129,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                         cards_number -= 1
                             else:
                                 print('Invalid move')
+                            chosen_cards = ['0'] * cards_number
                             chosen_cards_to_send = ['0'] * 24
                             cards = pygame.sprite.Group()
                             cards_positions = [(x, 550) for x in

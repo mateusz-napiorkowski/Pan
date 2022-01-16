@@ -231,10 +231,9 @@ while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "
         }
         if(validMove == '1') {
             if((peek() == 0 && strcmp(chosenCardsVector, "011100000000000000000000") == 0) ||
-                ((chosenCardsCount == 1) && (peek() / 4 + 1 == chosenCardsIndices[0] / 4)) ||
-                ((chosenCardsCount == 1) && (peek() / 4 == chosenCardsIndices[0] / 4)) ||
+                ((chosenCardsCount == 1) && (peek() / 4 <= chosenCardsIndices[0] / 4)) ||
                 ((chosenCardsCount == 4) && (chosenCardsIndices[0] + 3 == chosenCardsIndices[3]) && (chosenCardsIndices[0] % 4 == 0) &&
-                    (peek() / 4 + 1 == chosenCardsIndices[0] / 4)
+                    (peek() / 4 < chosenCardsIndices[0] / 4)
                 )
             ) {
                 validMove = '1';

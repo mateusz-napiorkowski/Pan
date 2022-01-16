@@ -26,6 +26,7 @@ class Button(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = [x_pos, y_pos]
 
+
 class Player_label(pygame.sprite.Sprite):
     def __init__(self, image_path, x_pos, y_pos):
         pygame.sprite.Sprite.__init__(self)
@@ -40,9 +41,6 @@ port = 1100
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     s.connect((host, port))
-    #s.setblocking(0)
-    #s.send(bytes(msg, 'utf-8'))
-
 
     pygame.init()
     clock = pygame.time.Clock()
@@ -58,13 +56,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     buttons.add(Button('play_button.png', 400, 660))
     buttons.add(Button('draw_button.png', 600, 660))
 
-
     card_images = sorted(os.listdir('cards'), key=lambda x: int(re.match('(\d+).*', x).groups()[0]))
     card_indices = [i for i in range(24)]
+
     cards_number = 12
     data = s.recv(13)
     player_cards = [byte for byte in data]
     which_player = player_cards.pop()
+
     labels = pygame.sprite.Group()
     if which_player == 1:
         labels.add(Player_label('player1.png', 200, 660))
@@ -74,7 +73,8 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         labels.add(Player_label('player2.png', 200, 660))
 
     cards = pygame.sprite.Group()
-    cards_positions = [(x, 550) for x in range((1000-(30*(cards_number-1)+100))//2+50, 1000, 30)][:cards_number]
+    cards_positions = [(x, 550) for x in range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
+                      :cards_number]
     for i, card_name in enumerate(player_cards):
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
@@ -114,9 +114,21 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 for k, card in enumerate(chosen_cards_to_send):
                                     if card == '1':
                                         card_stack.append(k)
+                                        player_cards.remove(k)
+                                        cards_number -= 1
                             else:
                                 print('Invalid move')
                             chosen_cards_to_send = ['0'] * 24
+                            if which_player == 1:
+                                whose_turn = 2
+                            else:
+                                whose_turn = 1
+                            cards = pygame.sprite.Group()
+                            cards_positions = [(x, 550) for x in
+                                               range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
+                                              :cards_number]
+                            for i, card_name in enumerate(player_cards):
+                                cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)

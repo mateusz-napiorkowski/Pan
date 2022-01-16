@@ -71,6 +71,11 @@ void * socketThread(void *arg)
   for(int i=0;i<24;i++) {
       cards[i] = i;
   }
+  char player1CardsVector[24], player2CardsVector[24];
+  for(int i=0;i<24;i++) {
+    player1CardsVector[i] = '0';
+    player2CardsVector[i] = '0';
+  }
 
   /*Deal the cards for both players at the start of the game*/
   time_t t;
@@ -90,6 +95,7 @@ void * socketThread(void *arg)
     }
     if(unique) {
         player1Cards[cardsChosen] = chosenCard;
+        player1CardsVector[chosenCard] = '1';
         cardsChosen++;
     } else {
         unique = 1;
@@ -106,6 +112,7 @@ void * socketThread(void *arg)
     }
     if(unique) {
         player2Cards[player2CardsCounter] = i;
+        player2CardsVector[i] = '1';
         player2CardsCounter++;
     } else {
         unique = 1;
@@ -116,16 +123,13 @@ void * socketThread(void *arg)
     player1CardsToSend[i] = player1Cards[i];
     player2CardsToSend[i] = player2Cards[i];
   }
+
   //inform players which one they are
   player1CardsToSend[12] = 1;
   player2CardsToSend[12] = 2;
-//  for(int i=0;i<13;i++) {
-//    printf("%ld ", player1CardsToSend[i]);
-//  }
-//  printf('\n');
+
   send(struct_ptr->player1Socket, player1CardsToSend, 13, 0);
   send(struct_ptr->player2Socket, player2CardsToSend, 13, 0);
-
 
   /*Wait for the player with 9 of hearts*/
   int whoseTurn = 1;
@@ -151,19 +155,31 @@ void * socketThread(void *arg)
     n=recv(struct_ptr->player2Socket , chosenCardsVector , 24 , 0);
   }
   for (int i=0;i<24; i++) {
-  printf("%d %d\n", i, chosenCardsVector[i]);
+  //printf("%d %d\n", i, chosenCardsVector[i]);
   }
   char validMove = '0';
   if(strcmp(chosenCardsVector, "100000000000000000000000") == 0 || strcmp(chosenCardsVector, "111100000000000000000000") == 0) {
     printf("OK\n");
     push(0);
+    if(whoseTurn == 1) player1CardsVector[0] = '0';
+    else player2CardsVector[0] = '0';
     if(chosenCardsVector[1] == '1') {
         push(1);
         push(2);
         push(3);
+        if(whoseTurn == 1) {
+            player1CardsVector[1] = '0';
+            player1CardsVector[2] = '0';
+            player1CardsVector[3] = '0';
+        }
+        else {
+            player2CardsVector[1] = '0';
+            player2CardsVector[2] = '0';
+            player2CardsVector[3] = '0';
+        }
     }
     validMove = '1';
-    printf("%d\n", peek());
+    //printf("%d\n", peek());
   } else {
     printf("NOT OK\n");
   }
@@ -182,27 +198,24 @@ void * socketThread(void *arg)
   }
 
 
-
-
-  //printf("my struct: %d\n", struct_ptr->newSocket);
-  //printf("my struct: %d\n", struct_ptr->newSocket2);
-//  int n;
-//  for(;;){
-//    n=recv(struct_ptr->player1Socket , client_message , 2000 , 0);
-//        if(n<1){
-//            break;
-//        }
-//
-//    char *message = malloc(sizeof(client_message));
-//    strcpy(message,client_message);
-//    sleep(1);
-//    send(struct_ptr->player2Socket,message,11,0);
-//    memset(&client_message, 0, sizeof (client_message));
-//
+//  while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "00000000000000000000000") {
+    if(whoseTurn == 1) {
+        whoseTurn = 2;
+        turn = '2';
+        printf("Player %d:\n", whoseTurn);
+        send(struct_ptr->player2Socket, &turn, 1, 0);
+    }
+    else {
+        whoseTurn = 1;
+        turn = '1';
+        printf("Player %d:\n", whoseTurn);
+        send(struct_ptr->player2Socket, &turn, 1, 0);
 //    }
-    printf("Exit socketThread \n");
 
-    pthread_exit(NULL);
+  }
+  printf("Exit socketThread \n");
+
+  pthread_exit(NULL);
 }
 
 int main() {

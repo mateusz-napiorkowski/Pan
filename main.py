@@ -80,6 +80,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 24
     card_stack = []
+    first_move = True
     while True:
         events = pygame.event.get()
         for event in events:
@@ -100,9 +101,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                     else:
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
                         chosen_cards[chosen_card_index] = '0'
+
                 for i, button in enumerate(buttons):
                     if button.rect.collidepoint(mouse_x_pos, mouse_y_pos):
-                        if i == 0:
+                        if i == 0:  # play button
                             for j, player_card in enumerate(player_cards):
                                 if chosen_cards[j] == '1':
                                     chosen_cards_to_send[player_card] = '1'
@@ -119,10 +121,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             else:
                                 print('Invalid move')
                             chosen_cards_to_send = ['0'] * 24
-                            if which_player == 1:
-                                whose_turn = 2
-                            else:
-                                whose_turn = 1
                             cards = pygame.sprite.Group()
                             cards_positions = [(x, 550) for x in
                                                range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
@@ -134,6 +132,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         ready = select.select([s], [], [], 0.01)
         if ready[0]:
             whose_turn = int(s.recv(1))
+            print(f'Me: {which_player}, Whose turn: {whose_turn}')
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
         cards.draw(gameDisplay)

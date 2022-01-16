@@ -156,7 +156,14 @@ void * socketThread(void *arg)
   char validMove = '0';
   if(strcmp(chosenCardsVector, "100000000000000000000000") == 0 || strcmp(chosenCardsVector, "111100000000000000000000") == 0) {
     printf("OK\n");
+    push(0);
+    if(chosenCardsVector[1] == '1') {
+        push(1);
+        push(2);
+        push(3);
+    }
     validMove = '1';
+    printf("%d\n", peek());
   } else {
     printf("NOT OK\n");
   }

@@ -79,6 +79,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 24
+    card_stack = []
     while True:
         events = pygame.event.get()
         for event in events:
@@ -106,15 +107,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 if chosen_cards[j] == '1':
                                     chosen_cards_to_send[player_card] = '1'
                             s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
-                            chosen_cards_to_send = ['0'] * 24
-                            print('waiting for data')
                             data = s.recv(1)
                             ok = [byte for byte in data]
-                            print(ok)
                             if chr(ok[0]) == '1':
                                 print('Valid move')
+                                for k, card in enumerate(chosen_cards_to_send):
+                                    if card == '1':
+                                        card_stack.append(k)
                             else:
                                 print('Invalid move')
+                            chosen_cards_to_send = ['0'] * 24
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)

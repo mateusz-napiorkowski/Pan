@@ -78,7 +78,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     for i, card_name in enumerate(player_cards):
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
-    chosen_cards_to_send = ['0'] * 24
+    chosen_cards_to_send = ['0'] * 25
     card_stack = []
     while True:
         pygame.display.flip()
@@ -130,10 +130,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             else:
                                 print('Invalid move')
                             chosen_cards = ['0'] * cards_number
-                            chosen_cards_to_send = ['0'] * 24
+                            chosen_cards_to_send = ['0'] * 25
                             cards = pygame.sprite.Group()
                             cards_positions = [(x, 550) for x in
                                                range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
                                               :cards_number]
                             for i, card_name in enumerate(player_cards):
                                 cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
+                        if i == 1:  # draw 3 cards button button
+                            pass
+                            # chosen_cards_to_send[24] = '1'
+                            # s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
+                            # data = s.recv(3)

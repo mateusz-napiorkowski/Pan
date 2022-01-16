@@ -147,16 +147,16 @@ void * socketThread(void *arg)
   }
   char validMove = '0';
   int n;
-  char chosenCardsVector[24];
+  char chosenCardsVector[25];
   while(validMove != '1') {
       send(struct_ptr->player1Socket, &turn, 1, 0);
       send(struct_ptr->player2Socket, &turn, 1, 0);
       if(whoseTurn == 1) {
-        n=recv(struct_ptr->player1Socket , chosenCardsVector , 24 , 0);
+        n=recv(struct_ptr->player1Socket , chosenCardsVector , 25 , 0);
       } else {
-        n=recv(struct_ptr->player2Socket , chosenCardsVector , 24 , 0);
+        n=recv(struct_ptr->player2Socket , chosenCardsVector , 25 , 0);
       }
-      if(strcmp(chosenCardsVector, "100000000000000000000000") == 0 || strcmp(chosenCardsVector, "111100000000000000000000") == 0) {
+      if(strcmp(chosenCardsVector, "1000000000000000000000000") == 0 || strcmp(chosenCardsVector, "1111000000000000000000000") == 0) {
         printf("OK\n");
         push(0);
         if(whoseTurn == 1) player1CardsVector[0] = '0';
@@ -208,11 +208,11 @@ while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "
         if(whoseTurn == 1) {
             send(struct_ptr->player1Socket, &turn, 1, 0);
             send(struct_ptr->player2Socket, &turn, 1, 0);
-            n=recv(struct_ptr->player1Socket , chosenCardsVector , 24 , 0);
+            n=recv(struct_ptr->player1Socket , chosenCardsVector , 25 , 0);
         } else {
             send(struct_ptr->player1Socket, &turn, 1, 0);
             send(struct_ptr->player2Socket, &turn, 1, 0);
-            n=recv(struct_ptr->player2Socket , chosenCardsVector , 24 , 0);
+            n=recv(struct_ptr->player2Socket , chosenCardsVector , 25 , 0);
         }
         int chosenCardsIndices[4];
         for(int i=0;i<4;i++) {
@@ -230,7 +230,7 @@ while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "
             }
         }
         if(validMove == '1') {
-            if((peek() == 0 && strcmp(chosenCardsVector, "011100000000000000000000") == 0) ||
+            if((peek() == 0 && strcmp(chosenCardsVector, "0111000000000000000000000") == 0) ||
                 ((chosenCardsCount == 1) && (peek() / 4 <= chosenCardsIndices[0] / 4)) ||
                 ((chosenCardsCount == 4) && (chosenCardsIndices[0] + 3 == chosenCardsIndices[3]) && (chosenCardsIndices[0] % 4 == 0) &&
                     (peek() / 4 < chosenCardsIndices[0] / 4)

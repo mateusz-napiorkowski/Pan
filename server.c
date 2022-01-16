@@ -233,6 +233,9 @@ void * socketThread(void *arg)
             )
         ) {
             validMove == '1';
+            for(int i=0; i<chosenCardsCount; i++) {
+                push(chosenCardsIndices[i]);
+            }
         } else {
             validMove == '0';
         }
@@ -242,6 +245,7 @@ void * socketThread(void *arg)
     } else {
         send(struct_ptr->player2Socket, &validMove, 1, 0);
     }
+    printf("peek(): %d\n", peek());
 
 //  }
   printf("Exit socketThread \n");

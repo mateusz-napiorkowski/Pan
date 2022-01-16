@@ -71,6 +71,7 @@ void * socketThread(void *arg)
   for(int i=0;i<24;i++) {
       cards[i] = i;
   }
+
   /*Deal the cards for both players at the start of the game*/
   time_t t;
   srand((unsigned) time(&t));
@@ -110,14 +111,35 @@ void * socketThread(void *arg)
         unique = 1;
     }
   }
-  char player1CardsToSend[12], player2CardsToSend[12];
+  char player1CardsToSend[13], player2CardsToSend[13];
   for(int i=0; i<12; i++) {
     player1CardsToSend[i] = player1Cards[i];
     player2CardsToSend[i] = player2Cards[i];
   }
-  send(struct_ptr->player1Socket, player1CardsToSend, 12, 0);
-  send(struct_ptr->player2Socket, player2CardsToSend, 12, 0);
+  //inform players which one they are
+  player1CardsToSend[12] = 1;
+  player2CardsToSend[12] = 2;
+//  for(int i=0;i<13;i++) {
+//    printf("%ld ", player1CardsToSend[i]);
+//  }
+//  printf('\n');
+  send(struct_ptr->player1Socket, player1CardsToSend, 13, 0);
+  send(struct_ptr->player2Socket, player2CardsToSend, 13, 0);
 
+
+  /*Wait for the player with 9 of hearts*/
+  int whoseTurn = 1;
+  for(int i=0; i<12;i++) {
+    if(player2Cards[i] == 0) {
+        whoseTurn = 2;
+    }
+  }
+  printf("Player %d:\n", whoseTurn);
+  if(whoseTurn == 1) {
+
+  } else {
+
+  }
 
 
   //printf("my struct: %d\n", struct_ptr->newSocket);

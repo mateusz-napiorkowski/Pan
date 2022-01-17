@@ -130,7 +130,8 @@ void * socketThread(void *arg)
 
   send(struct_ptr->player1Socket, player1CardsToSend, 13, 0);
   send(struct_ptr->player2Socket, player2CardsToSend, 13, 0);
-
+  int player1CardsCount = 12;
+  int player2CardsCount = 12;
   /*Wait for the player with 9 of hearts*/
   int whoseTurn = 1;
   for(int i=0; i<12;i++) {
@@ -160,8 +161,14 @@ void * socketThread(void *arg)
       if(strcmp(chosenCardsVector, "1000000000000000000000000") == 0 || strcmp(chosenCardsVector, "1111000000000000000000000") == 0) {
         printf("OK\n");
         push(0);
-        if(whoseTurn == 1) player1CardsVector[0] = '0';
-        else player2CardsVector[0] = '0';
+        if(whoseTurn == 1) {
+            player1CardsVector[0] = '0';
+            player1CardsCount--;
+        }
+        else {
+            player2CardsVector[0] = '0';
+            player2CardsCount--;
+        }
         if(chosenCardsVector[1] == '1') {
             push(1);
             push(2);
@@ -170,11 +177,13 @@ void * socketThread(void *arg)
                 player1CardsVector[1] = '0';
                 player1CardsVector[2] = '0';
                 player1CardsVector[3] = '0';
+                player1CardsCount -= 3;
             }
             else {
                 player2CardsVector[1] = '0';
                 player2CardsVector[2] = '0';
                 player2CardsVector[3] = '0';
+                player2CardsCount -= 3;
             }
         }
         validMove = '1';
@@ -229,13 +238,13 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
             }
             validMove = '1';
             if(whoseTurn == 1) {
-                if (cardsToDrawMsg[0] != 24) player1CardsVector[cardsToDrawMsg[0]] = '1';
-                if (cardsToDrawMsg[1] != 24) player1CardsVector[cardsToDrawMsg[1]] = '1';
-                if (cardsToDrawMsg[2] != 24) player1CardsVector[cardsToDrawMsg[2]] = '1';
+                if (cardsToDrawMsg[0] != 24) {player1CardsVector[cardsToDrawMsg[0]] = '1'; player1CardsCount++;}
+                if (cardsToDrawMsg[1] != 24) {player1CardsVector[cardsToDrawMsg[1]] = '1'; player1CardsCount++;}
+                if (cardsToDrawMsg[2] != 24) {player1CardsVector[cardsToDrawMsg[2]] = '1'; player1CardsCount++;}
             } else {
-                if (cardsToDrawMsg[0] != 24) player2CardsVector[cardsToDrawMsg[0]] = '1';
-                if (cardsToDrawMsg[1] != 24) player2CardsVector[cardsToDrawMsg[1]] = '1';
-                if (cardsToDrawMsg[2] != 24) player2CardsVector[cardsToDrawMsg[2]] = '1';
+                if (cardsToDrawMsg[0] != 24) {player2CardsVector[cardsToDrawMsg[0]] = '1'; player2CardsCount++;}
+                if (cardsToDrawMsg[1] != 24) {player2CardsVector[cardsToDrawMsg[1]] = '1'; player2CardsCount++;}
+                if (cardsToDrawMsg[2] != 24) {player2CardsVector[cardsToDrawMsg[2]] = '1'; player2CardsCount++;}
             }
             if(whoseTurn == 1) send(struct_ptr->player1Socket, cardsToDrawMsg, 3, 0);
             else send(struct_ptr->player2Socket, cardsToDrawMsg, 3, 0);
@@ -243,6 +252,7 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
             cardsToDrawMsg[1] = 24;
             cardsToDrawMsg[2] = 24;
         } else {
+            /**/
             int chosenCardsIndices[4];
             for(int i=0;i<4;i++) {
                 chosenCardsIndices[i] = -1;
@@ -271,8 +281,10 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
                         push(chosenCardsIndices[i]);
                         if(whoseTurn == 1) {
                             player1CardsVector[chosenCardsIndices[i]] = '0';
+                            player1CardsCount--;
                         } else {
                             player2CardsVector[chosenCardsIndices[i]] = '0';
+                            player2CardsCount--;
                         }
                     }
                } else {
@@ -287,6 +299,8 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
             }
         }
     }
+    printf("player1: %d\n", player1CardsCount);
+    printf("player2: %d\n", player2CardsCount);
 }
 char whoWon[2];
 if(strcmp(player1CardsVector,"000000000000000000000000") == 0) {

@@ -199,12 +199,6 @@ void * socketThread(void *arg)
 char cardsToDrawMsg[3] = {24, 24, 24};
 int cardsToDraw[3] = {-1, -1, -1};
 while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(player2CardsVector, "000000000000000000000000") != 0) {
-    printf("p1: %s\n", player1CardsVector);
-    printf("cmp %s\n", "000000000000000000000000");
-    printf("strcmp: %d\n", strcmp(player1CardsVector,"000000000000000000000000"));
-    printf("p2: %s\n", player2CardsVector);
-    printf("cmp %s\n", "000000000000000000000000");
-    printf("strcmp: %d\n", strcmp(player2CardsVector,"000000000000000000000000"));
     if(whoseTurn == 1) {
         whoseTurn = 2;
         turn[0] = '2';
@@ -226,14 +220,10 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
             n=recv(struct_ptr->player2Socket , chosenCardsVector , 25 , 0);
         }
         if(chosenCardsVector[24] == '1') {
-            printf("ITS TIME FOR TO DRAW 3 CARDS\n");
             for(int i=0; i<3; i++) {
                 if(peek() != 0) {
-                    printf("peek()1: %d\n", peek());
-                    // cardsToDraw[i] = pop();
                     cardsToDrawMsg[i] = pop();
                 } else {
-                    printf("9 of hearts on top\n");
                     break;
                 }
             }
@@ -247,12 +237,11 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
                 if (cardsToDrawMsg[1] != 24) player2CardsVector[cardsToDrawMsg[1]] = '1';
                 if (cardsToDrawMsg[2] != 24) player2CardsVector[cardsToDrawMsg[2]] = '1';
             }
-            printf("chars: %c %c %c\n", cardsToDrawMsg[0], cardsToDrawMsg[1], cardsToDrawMsg[2]);
-            printf("peek()2: %d\n", peek());
-            printf("ints: %d %d %d\n", cardsToDrawMsg[0], cardsToDrawMsg[1], cardsToDrawMsg[2]);
             if(whoseTurn == 1) send(struct_ptr->player1Socket, cardsToDrawMsg, 3, 0);
             else send(struct_ptr->player2Socket, cardsToDrawMsg, 3, 0);
-            printf("peek()3: %d\n", peek());
+            cardsToDrawMsg[0] = 24;
+            cardsToDrawMsg[1] = 24;
+            cardsToDrawMsg[2] = 24;
         } else {
             int chosenCardsIndices[4];
             for(int i=0;i<4;i++) {
@@ -282,10 +271,8 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
                         push(chosenCardsIndices[i]);
                         if(whoseTurn == 1) {
                             player1CardsVector[chosenCardsIndices[i]] = '0';
-                            printf("player1: %s\n", player1CardsVector);
                         } else {
                             player2CardsVector[chosenCardsIndices[i]] = '0';
-                            printf("player2: %s\n", player2CardsVector);
                         }
                     }
                } else {

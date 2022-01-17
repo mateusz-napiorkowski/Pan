@@ -36,6 +36,15 @@ class Player_label(pygame.sprite.Sprite):
         self.rect.center = [x_pos, y_pos]
 
 
+class Result_label(pygame.sprite.Sprite):
+    def __init__(self, image_path, x_pos, y_pos):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface([800, 100])
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.center = [x_pos, y_pos]
+
+
 host = '127.0.0.1'
 port = 1100
 
@@ -51,6 +60,15 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     gameDisplay = pygame.display.set_mode((display_width, display_height))
     pygame.display.set_caption('Pan')
     background = pygame.image.load('background.jpg')
+
+    # result_label = pygame.sprite.Group()
+    # result_label.add(Result_label('won.png', 500, 350))
+    #
+    # pygame.display.flip()
+    # gameDisplay.blit(background, (0, 0))
+    # result_label.draw(gameDisplay)
+    # clock.tick(60)
+    # input()
 
     buttons = pygame.sprite.Group()
     buttons.add(Button('play_button.png', 400, 660))
@@ -92,11 +110,28 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             print(f'Me: {which_player}, Whose turn: {whose_turn}')
             if whose_turn == 3:
                 print("Player 1 won.")
-                input()
+                result_label = pygame.sprite.Group()
+                if which_player == 1:
+                    result_label.add(Result_label('won.png', 500, 350))
+                else:
+                    result_label.add(Result_label('lost.png', 500, 350))
+                gameDisplay.blit(background, (0, 0))
+                result_label.draw(gameDisplay)
+                clock.tick(60)
+                pygame.display.flip()
                 break
             elif whose_turn == 4:
                 print("Player 2 won.")
-                input()
+                result_label = pygame.sprite.Group()
+                if which_player == 2:
+                    result_label.add(Result_label('won.png', 500, 350))
+                else:
+                    result_label.add(Result_label('lost.png', 500, 350))
+
+                gameDisplay.blit(background, (0, 0))
+                result_label.draw(gameDisplay)
+                clock.tick(60)
+                pygame.display.flip()
                 break
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
@@ -170,3 +205,5 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             for z, card_name in enumerate(player_cards):
                                 cards.add(Card(f'cards/{card_name}.png', cards_positions[z][0], cards_positions[z][1]))
                             chosen_cards_to_send[24] = '0'
+while True:
+    pass

@@ -97,7 +97,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 25
-    card_stack = []
+    # card_stack = []
+    stack = pygame.sprite.Group()
+    stack.add(Card(f'cards/{0}.png', 500, 350))
     while True:
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
@@ -137,6 +139,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             buttons.draw(gameDisplay)
         cards.draw(gameDisplay)
         labels.draw(gameDisplay)
+        stack.draw(gameDisplay)
         clock.tick(60)
         events = pygame.event.get()
         for event in events:
@@ -172,7 +175,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 print('Valid move')
                                 for k, card in enumerate(chosen_cards_to_send):
                                     if card == '1':
-                                        card_stack.append(k)
+                                        #card_stack.append(k)
                                         player_cards.remove(k)
                                         cards_number -= 1
                             else:

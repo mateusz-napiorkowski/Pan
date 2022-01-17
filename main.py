@@ -90,6 +90,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             whose_turn = int(chr(received_msg[0]))
             print(type(whose_turn))
             print(f'Me: {which_player}, Whose turn: {whose_turn}')
+            if whose_turn == 3:
+                print("Player 1 won.")
+                input()
+                break
+            elif whose_turn == 4:
+                print("Player 2 won.")
+                input()
+                break
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
         cards.draw(gameDisplay)

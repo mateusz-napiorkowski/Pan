@@ -298,8 +298,17 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
         }
     }
 }
+char whoWon; // '3' - player 1 won, '4' - player 2 won
+if(strcmp(player1CardsVector,"000000000000000000000000") == 0) {
+    printf("Player 1 won.\n");
+    whoWon = '3';
+} else if (strcmp(player2CardsVector, "000000000000000000000000") == 0) {
+    printf("Player 2 won.\n");
+    whoWon = '4';
+}
+  send(struct_ptr->player1Socket, &whoWon, 1, 0);
+  send(struct_ptr->player2Socket, &whoWon, 1, 0);
   printf("Exit socketThread \n");
-
   pthread_exit(NULL);
 }
 

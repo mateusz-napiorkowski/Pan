@@ -140,7 +140,7 @@ void * socketThread(void *arg)
     }
   }
 
-  char turn[2];
+  char turn[3];
   turn[1] = 24;
   if(whoseTurn == 1) {
     turn[0] = '1';
@@ -151,8 +151,10 @@ void * socketThread(void *arg)
   int n;
   char chosenCardsVector[25];
   while(validMove != '1') {
-      send(struct_ptr->player1Socket, turn, 2, 0);
-      send(struct_ptr->player2Socket, turn, 2, 0);
+      turn[2] = player2CardsCount;
+      send(struct_ptr->player1Socket, turn, 3, 0);
+      turn[2] = player1CardsCount;
+      send(struct_ptr->player2Socket, turn, 3, 0);
       if(whoseTurn == 1) {
         n=recv(struct_ptr->player1Socket , chosenCardsVector , 25 , 0);
       } else {
@@ -220,12 +222,16 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
     validMove = '0';
     while(validMove == '0') {
         if(whoseTurn == 1) {
-            send(struct_ptr->player1Socket, turn, 2, 0);
-            send(struct_ptr->player2Socket, turn, 2, 0);
+            turn[2] = player2CardsCount;
+            send(struct_ptr->player1Socket, turn, 3, 0);
+            turn[2] = player1CardsCount;
+            send(struct_ptr->player2Socket, turn, 3, 0);
             n=recv(struct_ptr->player1Socket , chosenCardsVector , 25 , 0);
         } else {
-            send(struct_ptr->player1Socket, turn, 2, 0);
-            send(struct_ptr->player2Socket, turn, 2, 0);
+            turn[2] = player2CardsCount;
+            send(struct_ptr->player1Socket, turn, 3, 0);
+            turn[2] = player1CardsCount;
+            send(struct_ptr->player2Socket, turn, 3, 0);
             n=recv(struct_ptr->player2Socket , chosenCardsVector , 25 , 0);
         }
         if(chosenCardsVector[24] == '1') {
@@ -302,15 +308,17 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
     printf("player1: %d\n", player1CardsCount);
     printf("player2: %d\n", player2CardsCount);
 }
-char whoWon[2];
+char whoWon[3];
 if(strcmp(player1CardsVector,"000000000000000000000000") == 0) {
     printf("Player 1 won.\n");
     whoWon[0] = '3';    // '3' - player 1 won
     whoWon[1] = 24;
+    whoWon[2] = 0;
 } else if (strcmp(player2CardsVector, "000000000000000000000000") == 0) {
     printf("Player 2 won.\n");
     whoWon[0] = '4';    // '4' - player 2 won
     whoWon[1] = 24;
+    whoWon[2] = 0;
 }
   send(struct_ptr->player1Socket, whoWon, 2, 0);
   send(struct_ptr->player2Socket, whoWon, 2, 0);

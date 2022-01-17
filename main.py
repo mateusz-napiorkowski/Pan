@@ -98,16 +98,14 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 25
     # card_stack = []
-    stack = pygame.sprite.Group()
-    stack.add(Card(f'cards/{0}.png', 500, 350))
     while True:
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)
         if ready[0]:
-            received_msg = s.recv(1)
-            print("rcvdmsg:", received_msg)
-            whose_turn = int(chr(received_msg[0]))
+            turn_ascii, stack_card = s.recv(2)
+            whose_turn = int(chr(turn_ascii))
+            print("STACK CARD!:", stack_card)
             print(type(whose_turn))
             print(f'Me: {which_player}, Whose turn: {whose_turn}')
             if whose_turn == 3:
@@ -139,7 +137,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             buttons.draw(gameDisplay)
         cards.draw(gameDisplay)
         labels.draw(gameDisplay)
-        stack.draw(gameDisplay)
+        if stack_card in range(0, 24):
+            stack = pygame.sprite.Group()
+            stack.add(Card(f'cards/{stack_card}.png', 500, 350))
+            stack.draw(gameDisplay)
         clock.tick(60)
         events = pygame.event.get()
         for event in events:

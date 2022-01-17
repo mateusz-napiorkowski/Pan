@@ -194,8 +194,16 @@ void * socketThread(void *arg)
         }
       }
   }
-    /*Next moves*/
-while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "00000000000000000000000") {
+/*Next moves*/
+char cardsToDrawMsg[3] = {24, 24, 24};
+int cardsToDraw[3] = {-1, -1, -1};
+while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(player2CardsVector, "000000000000000000000000") != 0) {
+    printf("p1: %s\n", player1CardsVector);
+    printf("cmp %s\n", "000000000000000000000000");
+    printf("strcmp: %d\n", strcmp(player1CardsVector,"000000000000000000000000"));
+    printf("p2: %s\n", player2CardsVector);
+    printf("cmp %s\n", "000000000000000000000000");
+    printf("strcmp: %d\n", strcmp(player2CardsVector,"000000000000000000000000"));
     if(whoseTurn == 1) {
         whoseTurn = 2;
         turn = '2';
@@ -214,49 +222,79 @@ while(player1CardsVector != "00000000000000000000000" || player2CardsVector != "
             send(struct_ptr->player2Socket, &turn, 1, 0);
             n=recv(struct_ptr->player2Socket , chosenCardsVector , 25 , 0);
         }
-        int chosenCardsIndices[4];
-        for(int i=0;i<4;i++) {
-            chosenCardsIndices[i] = -1;
-        }
-        int chosenCardsCount = 0;
-        validMove = '1';
-        for(int i=0; i<24; i++) {
-            if(chosenCardsVector[i] == '1') {
-                if(chosenCardsCount == 5) {
+        if(chosenCardsVector[24] == '1') {
+            printf("ITS TIME FOR TO DRAW 3 CARDS\n");
+            for(int i=0; i<3; i++) {
+                if(peek() != 0) {
+                    printf("peek()1: %d\n", peek());
+                    // cardsToDraw[i] = pop();
+                    cardsToDrawMsg[i] = pop();
+                } else {
+                    printf("9 of hearts on top\n");
+                    break;
+                }
+            }
+            validMove = '1';
+            if(whoseTurn == 1) {
+                if (cardsToDrawMsg[0] != 24) player1CardsVector[cardsToDrawMsg[0]] = '1';
+                if (cardsToDrawMsg[1] != 24) player1CardsVector[cardsToDrawMsg[1]] = '1';
+                if (cardsToDrawMsg[2] != 24) player1CardsVector[cardsToDrawMsg[2]] = '1';
+            } else {
+                if (cardsToDrawMsg[0] != 24) player2CardsVector[cardsToDrawMsg[0]] = '1';
+                if (cardsToDrawMsg[1] != 24) player2CardsVector[cardsToDrawMsg[1]] = '1';
+                if (cardsToDrawMsg[2] != 24) player2CardsVector[cardsToDrawMsg[2]] = '1';
+            }
+            printf("chars: %c %c %c\n", cardsToDrawMsg[0], cardsToDrawMsg[1], cardsToDrawMsg[2]);
+            printf("peek()2: %d\n", peek());
+            printf("ints: %d %d %d\n", cardsToDrawMsg[0], cardsToDrawMsg[1], cardsToDrawMsg[2]);
+            if(whoseTurn == 1) send(struct_ptr->player1Socket, cardsToDrawMsg, 3, 0);
+            else send(struct_ptr->player2Socket, cardsToDrawMsg, 3, 0);
+            printf("peek()3: %d\n", peek());
+        } else {
+            int chosenCardsIndices[4];
+            for(int i=0;i<4;i++) {
+                chosenCardsIndices[i] = -1;
+            }
+            int chosenCardsCount = 0;
+            validMove = '1';
+            for(int i=0; i<24; i++) {
+                if(chosenCardsVector[i] == '1') {
+                    if(chosenCardsCount == 5) {
+                        validMove = '0';
+                    }
+                    chosenCardsIndices[chosenCardsCount] = i;
+                    chosenCardsCount++;
+                }
+            }
+            if(validMove == '1') {
+                if((peek() == 0 && strcmp(chosenCardsVector, "0111000000000000000000000") == 0) ||
+                    ((chosenCardsCount == 1) && (peek() / 4 <= chosenCardsIndices[0] / 4)) ||
+                    ((chosenCardsCount == 4) && (chosenCardsIndices[0] + 3 == chosenCardsIndices[3]) && (chosenCardsIndices[0] % 4 == 0) &&
+                        (peek() / 4 < chosenCardsIndices[0] / 4)
+                    )
+                ) {
+                    validMove = '1';
+                    printf("OK\n");
+                    for(int i=0; i<chosenCardsCount; i++) {
+                        push(chosenCardsIndices[i]);
+                        if(whoseTurn == 1) {
+                            player1CardsVector[chosenCardsIndices[i]] = '0';
+                            printf("player1: %s\n", player1CardsVector);
+                        } else {
+                            player2CardsVector[chosenCardsIndices[i]] = '0';
+                            printf("player2: %s\n", player2CardsVector);
+                        }
+                    }
+               } else {
+                    printf("NOT OK\n");
                     validMove = '0';
                 }
-                chosenCardsIndices[chosenCardsCount] = i;
-                chosenCardsCount++;
             }
-        }
-        if(validMove == '1') {
-            if((peek() == 0 && strcmp(chosenCardsVector, "0111000000000000000000000") == 0) ||
-                ((chosenCardsCount == 1) && (peek() / 4 <= chosenCardsIndices[0] / 4)) ||
-                ((chosenCardsCount == 4) && (chosenCardsIndices[0] + 3 == chosenCardsIndices[3]) && (chosenCardsIndices[0] % 4 == 0) &&
-                    (peek() / 4 < chosenCardsIndices[0] / 4)
-                )
-            ) {
-                validMove = '1';
-                printf("OK\n");
-                for(int i=0; i<chosenCardsCount; i++) {
-                    push(chosenCardsIndices[i]);
-                    if(whoseTurn == 1) {
-                        player1CardsVector[chosenCardsIndices[i]] = '0';
-                        printf("player1: %s\n", player1CardsVector);
-                    } else {
-                        player2CardsVector[chosenCardsIndices[i]] = '0';
-                        printf("player1: %s\n", player2CardsVector);
-                    }
-                }
+            if(whoseTurn == 1) {
+                send(struct_ptr->player1Socket, &validMove, 1, 0);
             } else {
-                printf("NOT OK\n");
-                validMove = '0';
+                send(struct_ptr->player2Socket, &validMove, 1, 0);
             }
-        }
-        if(whoseTurn == 1) {
-            send(struct_ptr->player1Socket, &validMove, 1, 0);
-        } else {
-            send(struct_ptr->player2Socket, &validMove, 1, 0);
         }
     }
 }

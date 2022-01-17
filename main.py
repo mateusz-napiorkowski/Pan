@@ -85,7 +85,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)
         if ready[0]:
-            whose_turn = int(s.recv(1))
+            received_msg = s.recv(1)
+            print("rcvdmsg:", received_msg)
+            whose_turn = int(chr(received_msg[0]))
+            print(type(whose_turn))
             print(f'Me: {which_player}, Whose turn: {whose_turn}')
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
@@ -106,14 +109,16 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         chosen_card_index = card_index
                 if chosen_card_index is not None:
                     if chosen_cards[chosen_card_index] == '0':
+                        print(chosen_cards, chosen_card_index)
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 525)
                         chosen_cards[chosen_card_index] = '1'
                     else:
                         cards.sprites()[chosen_card_index].update(cards_positions[chosen_card_index][0], 550)
                         chosen_cards[chosen_card_index] = '0'
-                for i, button in enumerate(buttons):
+                for m, button in enumerate(buttons):
                     if button.rect.collidepoint(mouse_x_pos, mouse_y_pos):
-                        if i == 0:  # play button
+                        if m == 0:  # play button
+                            print('clicked play')
                             for j, player_card in enumerate(player_cards):
                                 if chosen_cards[j] == '1':
                                     chosen_cards_to_send[player_card] = '1'
@@ -135,10 +140,25 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             cards_positions = [(x, 550) for x in
                                                range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
                                               :cards_number]
-                            for i, card_name in enumerate(player_cards):
-                                cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
-                        if i == 1:  # draw 3 cards button button
-                            pass
-                            # chosen_cards_to_send[24] = '1'
-                            # s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
-                            # data = s.recv(3)
+                            for n, card_name in enumerate(player_cards):
+                                cards.add(Card(f'cards/{card_name}.png', cards_positions[n][0], cards_positions[n][1]))
+                        if m == 1:  # draw 3 cards button button
+                            print('clicked draw')
+                            chosen_cards_to_send[24] = '1'
+                            s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
+                            data = s.recv(3)
+                            for b in data:
+                                if b != 24:
+                                    player_cards.append(b)
+                                    cards_number += 1
+                                print(b)
+                            print(data)
+                            print("curr cards:", player_cards)
+                            chosen_cards = ['0'] * cards_number
+                            cards = pygame.sprite.Group()
+                            cards_positions = [(x, 550) for x in
+                                               range((1000 - (30 * (cards_number - 1) + 100)) // 2 + 50, 1000, 30)][
+                                              :cards_number]
+                            for z, card_name in enumerate(player_cards):
+                                cards.add(Card(f'cards/{card_name}.png', cards_positions[z][0], cards_positions[z][1]))
+                            chosen_cards_to_send[24] = '0'

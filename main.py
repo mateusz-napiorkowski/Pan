@@ -104,30 +104,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                        :opponents_cards_number]
             for c in range(opponents_cards_number):
                 opponent_cards.add(Card('back.png', opponent_cards_positions[c][0], opponent_cards_positions[c][1]))
-            if whose_turn == 3:
-                print("Player 1 won.")
-                result_label = pygame.sprite.Group()
-                if which_player == 1:
-                    result_label.add(Result_label('won.png', 500, 350))
-                else:
-                    result_label.add(Result_label('lost.png', 500, 350))
-                gameDisplay.blit(background, (0, 0))
-                result_label.draw(gameDisplay)
-                clock.tick(60)
-                pygame.display.flip()
-                break
-            elif whose_turn == 4:
-                print("Player 2 won.")
-                result_label = pygame.sprite.Group()
-                if which_player == 2:
-                    result_label.add(Result_label('won.png', 500, 350))
-                else:
-                    result_label.add(Result_label('lost.png', 500, 350))
-
-                gameDisplay.blit(background, (0, 0))
-                result_label.draw(gameDisplay)
-                clock.tick(60)
-                pygame.display.flip()
+            if whose_turn in (3, 4):
                 break
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
@@ -199,5 +176,33 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                             for z, card_name in enumerate(player_cards):
                                 cards.add(Card(f'cards/{card_name}.png', cards_positions[z][0], cards_positions[z][1]))
                             chosen_cards_to_send[24] = '0'
-while True:
-    pass
+
+if whose_turn == 3:
+    print("Player 1 won.")
+    result_label = pygame.sprite.Group()
+    if which_player == 1:
+        result_label.add(Result_label('won.png', 500, 350))
+    else:
+        result_label.add(Result_label('lost.png', 500, 350))
+    gameDisplay.blit(background, (0, 0))
+    result_label.draw(gameDisplay)
+    clock.tick(60)
+    pygame.display.flip()
+elif whose_turn == 4:
+    print("Player 2 won.")
+    result_label = pygame.sprite.Group()
+    if which_player == 2:
+        result_label.add(Result_label('won.png', 500, 350))
+    else:
+        result_label.add(Result_label('lost.png', 500, 350))
+
+    gameDisplay.blit(background, (0, 0))
+    result_label.draw(gameDisplay)
+    clock.tick(60)
+    pygame.display.flip()
+exit_game = False
+while not exit_game:
+    events = pygame.event.get()
+    for event in events:
+        if event.type in (pygame.KEYDOWN, pygame.MOUSEBUTTONDOWN):
+            exit_game = True

@@ -95,6 +95,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                       :cards_number]
     for i, card_name in enumerate(player_cards):
         cards.add(Card(f'cards/{card_name}.png', cards_positions[i][0], cards_positions[i][1]))
+    opponent_cards = pygame.sprite.Group()
+    opponent_cards_positions = [(x, 150) for x in range((1000 - (30 * 11 + 100)) // 2 + 50, 1000, 30)][
+                      :12]
+    for i, card_name in enumerate(player_cards):
+        opponent_cards.add(Card('back.png', opponent_cards_positions[i][0], opponent_cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 25
     # card_stack = []
@@ -136,6 +141,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if which_player == whose_turn:
             buttons.draw(gameDisplay)
         cards.draw(gameDisplay)
+        opponent_cards.draw(gameDisplay)
         labels.draw(gameDisplay)
         if stack_card in range(0, 24):
             stack = pygame.sprite.Group()

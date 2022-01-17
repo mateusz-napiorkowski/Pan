@@ -305,8 +305,6 @@ while(strcmp(player1CardsVector,"000000000000000000000000") != 0 && strcmp(playe
             }
         }
     }
-    printf("player1: %d\n", player1CardsCount);
-    printf("player2: %d\n", player2CardsCount);
 }
 char whoWon[3];
 if(strcmp(player1CardsVector,"000000000000000000000000") == 0) {

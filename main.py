@@ -61,15 +61,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     pygame.display.set_caption('Pan')
     background = pygame.image.load('background.jpg')
 
-    # result_label = pygame.sprite.Group()
-    # result_label.add(Result_label('won.png', 500, 350))
-    #
-    # pygame.display.flip()
-    # gameDisplay.blit(background, (0, 0))
-    # result_label.draw(gameDisplay)
-    # clock.tick(60)
-    # input()
-
     buttons = pygame.sprite.Group()
     buttons.add(Button('play_button.png', 400, 660))
     buttons.add(Button('draw_button.png', 600, 660))
@@ -102,17 +93,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         opponent_cards.add(Card('back.png', opponent_cards_positions[i][0], opponent_cards_positions[i][1]))
     chosen_cards = ['0'] * cards_number
     chosen_cards_to_send = ['0'] * 25
-    # card_stack = []
     while True:
         pygame.display.flip()
         gameDisplay.blit(background, (0, 0))
         ready = select.select([s], [], [], 0.01)
         if ready[0]:
-            print("EEEEEE")
             turn_ascii, stack_card, opponents_cards_number = s.recv(3)
-            print('AAAAAaaa')
             whose_turn = int(chr(turn_ascii))
-            print(opponents_cards_number)
             opponent_cards = pygame.sprite.Group()
             opponent_cards_positions = [(x, 150) for x in range((1000 - (30 * (opponents_cards_number-1) + 100)) // 2 + 50, 1000, 30)][
                                        :opponents_cards_number]
@@ -174,7 +161,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                         chosen_cards[chosen_card_index] = '0'
                 for m, button in enumerate(buttons):
                     if button.rect.collidepoint(mouse_x_pos, mouse_y_pos):
-                        if m == 0:  # play button
+                        if m == 0:  # 'Play' button
                             for j, player_card in enumerate(player_cards):
                                 if chosen_cards[j] == '1':
                                     chosen_cards_to_send[player_card] = '1'
@@ -185,7 +172,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                 print('Valid move')
                                 for k, card in enumerate(chosen_cards_to_send):
                                     if card == '1':
-                                        #card_stack.append(k)
                                         player_cards.remove(k)
                                         cards_number -= 1
                             else:
@@ -198,7 +184,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                                               :cards_number]
                             for n, card_name in enumerate(player_cards):
                                 cards.add(Card(f'cards/{card_name}.png', cards_positions[n][0], cards_positions[n][1]))
-                        if m == 1:  # draw 3 cards button
+                        if m == 1:  # 'Draw 3' button
                             chosen_cards_to_send[24] = '1'
                             s.send(bytes(''.join(chosen_cards_to_send), 'utf-8'))
                             data = s.recv(3)

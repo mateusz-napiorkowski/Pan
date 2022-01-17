@@ -1,6 +1,5 @@
 import pygame
 import os
-import random
 import socket
 import re
 import select

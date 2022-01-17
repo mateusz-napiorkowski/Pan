@@ -318,8 +318,8 @@ if(strcmp(player1CardsVector,"000000000000000000000000") == 0) {
     whoWon[1] = 24;
     whoWon[2] = 0;
 }
-  send(struct_ptr->player1Socket, whoWon, 2, 0);
-  send(struct_ptr->player2Socket, whoWon, 2, 0);
+  send(struct_ptr->player1Socket, whoWon, 3, 0);
+  send(struct_ptr->player2Socket, whoWon, 3, 0);
   printf("Exit socketThread \n");
   pthread_exit(NULL);
 }
